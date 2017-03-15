@@ -1,11 +1,14 @@
 package com.sounddly.background;
 
 import android.content.Intent;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -13,7 +16,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-
 
 
 
@@ -32,17 +34,21 @@ public class MainActivity extends AppCompatActivity {
         Button b1 = (Button) findViewById(R.id.button1);
         Button b2 = (Button) findViewById(R.id.button2);
 
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                "MyWakelockTag");
+        wakeLock.acquire();
+
+
         b1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // 서비스 시작하기
                 Log.d("test", "액티비티-서비스 시작버튼클릭");
+                Toast.makeText(MainActivity.this, "Hello", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(
                         getApplicationContext(),//현재제어권자
                         MyService.class); // 이동할 컴포넌트
                 startService(intent); // 서비스 시작
-
-
-
             }
         });
 

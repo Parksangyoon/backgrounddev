@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="C:\Users\sang\AndroidStudioProjects\backgrounddev\app\libs\jsoup-1.10.2.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="61f84a97f1a4f5905547b8b74afff8dc93f4cfce">
+        <dex dex="C:\Users\sang\AndroidStudioProjects\backgrounddev\app\build\intermediates\pre-dexed\debug\jsoup-1.10.2_30b8c100f912089decf027a9040d4244a42217ae.jar" />
+    </item>
+
+</items>

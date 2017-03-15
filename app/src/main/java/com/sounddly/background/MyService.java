@@ -1,11 +1,12 @@
 package com.sounddly.background;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -13,15 +14,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
+
 public class MyService extends Service {
-    MediaPlayer mp; // 음악 재생을 위한 객체
-
-    TimerTask adTast;
-    Timer timer;
-
-    Calendar c = Calendar.getInstance();
     String backstring="";
+    customhandler handler;
+    channelHandler channelhandler;
     int count=0;
+
+    int channel =0;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -35,26 +35,42 @@ public class MyService extends Service {
         super.onCreate();
         // 서비스에서 가장 먼저 호출됨(최초에 한번만)
         Log.d("test", "서비스의 onCreate");
-        mp = MediaPlayer.create(this, R.raw.chacha);
-        mp.setLooping(false); // 반복재생
+
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // 서비스가 호출될 때마다 실행
         Log.d("test", "서비스의 onStartCommand");
 
-        adTast = new TimerTask() {
-            public void run() {
-                backstring+="몇일 : " +c.get(Calendar.DAY_OF_MONTH) + ", 시 : "
-                        +c.get(Calendar.HOUR_OF_DAY) + ", 분 : " + c.get(Calendar.MINUTE)
-                        +", 초 : " + c.get(Calendar.SECOND)+ ", 카운터 :" + String.valueOf(count)+"\n";
-                Log.d("test", backstring);
+        handler = new customhandler();
+        channelhandler = new channelHandler();
 
+
+
+        TimerTask timerTask2 = new TimerTask() {
+            @Override
+            public void run() {
+                Message msg2 = channelhandler.obtainMessage();
+                channelhandler.sendMessage(msg2);
             }
         };
-        timer = new Timer();
-        //timer.schedule(adTast , 5000);  // 5초후 실행하고 종료
-        timer.schedule(adTast, 0, 10000); // 0초후 첫실행, 3초마다 계속실행
+        Timer timer = new Timer();
+        Timer timer2= new Timer();
+        Timer timer3= new Timer();
+        Timer timer4= new Timer();
+        Timer timer5= new Timer();
+        Timer timer6= new Timer();
+
+        Timer change =new Timer();
+
+        timer.schedule(gettimetask(), 0, 60000);
+        timer2.schedule(gettimetask(), 10000, 60000);
+        timer3.schedule(gettimetask(), 20000, 60000);
+        timer4.schedule(gettimetask(), 30000, 60000);
+        timer5.schedule(gettimetask(), 40000, 60000);
+        timer6.schedule(gettimetask(), 50000, 60000);
+        change.schedule(timerTask2, 5000, 10000);
+
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -64,9 +80,41 @@ public class MyService extends Service {
         super.onDestroy();
         // 서비스가 종료될 때 실행
         Log.d("test", "서비스의 onDestroy");
-        Log.d("test", backstring);
-        backstring ="";
-        count =0;
 
+    }
+
+    public class customhandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            //이곳에 실행할 작업내용을 넣습니다. (메인 스레드 작업이 가능!)
+            Calendar c = Calendar.getInstance();
+            backstring+= c.get(Calendar.DAY_OF_MONTH) + "일,  "
+                    +c.get(Calendar.HOUR_OF_DAY) + "시 , " + c.get(Calendar.MINUTE)
+                    +"분, " + c.get(Calendar.SECOND)+ "초, " + String.valueOf(count++)+"번," +
+                    String.valueOf(channel) + "채널 \n";
+            Toast.makeText(MyService.this, backstring, Toast.LENGTH_SHORT).show();
+
+            Log.d("test",backstring);
+        }
+    }
+    public class channelHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            //이곳에 실행할 작업내용을 넣습니다. (메인 스레드 작업이 가능!)
+            if(channel == 5) channel =0;
+            else channel++;
+
+        }
+    }
+    public TimerTask gettimetask(){
+        return new TimerTask() {
+            @Override
+            public void run() {
+                Message msg = handler.obtainMessage();
+                handler.sendMessage(msg);
+            }
+        };
     }
 }
